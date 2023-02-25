@@ -1,13 +1,13 @@
 ﻿using System.Collections.Concurrent;
-using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 using Reddit;
 using Reddit.Controllers.EventArgs;
-using Reddit.Inputs.LinksAndComments;
 using Reddit.Things;
+using static OpenAI.GPT3.ObjectModels.Models;
 
 namespace ChatGptRedditBot;
 
-internal class RedditService : IDisposable
+internal partial class RedditService : IDisposable
 {
     private readonly ConcurrentQueue<Message> _unreadMessages = new();
 
@@ -31,7 +31,7 @@ internal class RedditService : IDisposable
         _reddit.Account.Messages.UnreadUpdated -= OnUnreadUpdated;
     }
 
-    public async Task ProcessMessages(CancellationToken cancel)
+    public async Task ProcessMessages(Func<string, string, Task<string>> responseFactory, CancellationToken cancel)
     {
         var currentCount = _unreadMessages.Count;
         if (currentCount == 0)
@@ -50,16 +50,47 @@ internal class RedditService : IDisposable
             if (message.Subreddit != null)
             {
                 _logger.LogDebug("Sending reply for message from subreddit {}", message.Subreddit);
-                throw new NotImplementedException();
+
+                Match match = CommentPermalinkRegex().Match(message.Context);
+
+                string postFullname = "t3_" + (match != null && match.Groups != null && match.Groups.Count >= 2
+                    ? match.Groups[1].Value
+                    : "");
+                if (postFullname.Equals("t3_"))
+                {
+                    throw new Exception("Unable to extract ID from permalink.");
+                }
+
+                var commentFullName = "t1_" + (match != null && match.Groups != null && match.Groups.Count >= 4
+                    ? match.Groups[3].Value
+                    : "");
+                if (commentFullName.Equals("t1_"))
+                {
+                    throw new Exception("Unable to extract ID from permalink.");
+                }
+
+                var comment = _reddit.Comment(commentFullName).About();
+
+                var body = await responseFactory(message.Author, message.Body);
+
+                _logger.LogInformation("Sending reply to {}:\n{}", message.Context, body);
+
+                await comment.ReplyAsync(body);
+
+                await _reddit.Account.Messages.ReadMessageAsync(message.Name);
             }
             else
             {
-                _logger.LogDebug("Sending reply for private message");
-                var recipient = message.Author;
-                var subject = $"Re: {message.Subject}";
-                var body = "Yes";
+                _logger.LogWarning("Ignoring private message for now");
+                continue;
 
-                _logger.LogTrace("Sending reply to {}:\n{}\n{}", recipient, subject, body);
+                //_logger.LogDebug("Sending reply for private message");
+                //var recipient = message.Author;
+                //var subject = $"Re: {message.Subject}";
+
+                //var body = await responseFactory(message.Author, message.Body);
+
+                //_logger.LogTrace("Sending reply to {}:\n{}\n{}", recipient, subject, body);
                 //await _reddit.Account.Messages.ComposeAsync(recipient, subject, body);
             }
         }
@@ -74,4 +105,7 @@ internal class RedditService : IDisposable
             _unreadMessages.Enqueue(message);
         }
     }
+
+    [GeneratedRegex("\\/comments\\/([a-z0-9]+)\\/([-_A-Za-z0-9]+)\\/([a-z0-9]+)\\/")]
+    private static partial Regex CommentPermalinkRegex();
 }
