@@ -5,6 +5,11 @@ using OpenAI.GPT3.Extensions;
 using Reddit;
 
 IHost host = Host.CreateDefaultBuilder(args)
+    .ConfigureAppConfiguration((context, builder) =>
+    {
+        var configPath = context.Configuration["ConfigPath"];
+        if (configPath != null) builder.AddJsonFile(configPath, false, true);
+    })
     .ConfigureServices(services =>
     {
         services.AddOptions<RedditOptions>().BindConfiguration("Reddit").ValidateDataAnnotations();
