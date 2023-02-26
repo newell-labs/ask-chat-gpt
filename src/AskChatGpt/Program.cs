@@ -17,7 +17,11 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         services.Configure<ConsoleLoggerOptions>(o =>
         {
-            o.FormatterName = ConsoleFormatterNames.Json;
+            o.FormatterName = ConsoleFormatterNames.Simple;
+        });
+        services.Configure<SimpleConsoleFormatterOptions>(o =>
+        {
+            o.SingleLine = true;
         });
 
         services.AddOptions<RedditOptions>().BindConfiguration("Reddit").ValidateDataAnnotations();
