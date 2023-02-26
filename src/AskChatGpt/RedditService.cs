@@ -19,9 +19,12 @@ internal partial class RedditService
 
         var versionWithoutBuildMetadata = ThisAssembly.AssemblyInformationalVersion.Split('+').FirstOrDefault();
         _signature = $"""
-            ^(AskChatGpt v{versionWithoutBuildMetadata ?? "?"} |
-            I'm an experimental bot that leverages [OpenAI's text completion API](https://platform.openai.com/docs/guides/completion)
-            to respond to mentions or replies. See my [GitHub](https://github.com/newell-labs/chat-gpt-reddit-bot) for more info.)
+            -----
+            AskChatGpt v{versionWithoutBuildMetadata ?? "?"} |
+            [Feedback](https://www.reddit.com/message/compose/?to={_reddit.Account.Me.Name})
+
+            ^(Disclaimer: this is not full ChatGPT, as APIs are not available for that yet. It's more rudimentary
+            and won't give as detailed answers.)
             """;
     }
 
