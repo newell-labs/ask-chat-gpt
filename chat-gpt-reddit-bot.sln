@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGptRedditBot", "ChatGptRedditBot\ChatGptRedditBot.csproj", "{CAAB7106-E9B9-4857-B14D-B6D20EB6FE71}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C5C589D-D7AE-46A2-9F20-CA4A6D7BDBF4}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{E54B0F18-BCD2-420E-B918-C489BB04CCB7}"
 	ProjectSection(SolutionItems) = preProject
