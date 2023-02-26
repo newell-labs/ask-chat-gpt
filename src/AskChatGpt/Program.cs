@@ -24,7 +24,11 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<RedditClient>(sp =>
         {
             var opts = sp.GetRequiredService<IOptions<RedditOptions>>().Value;
-            var ua = $"{RuntimeInformation.FrameworkDescription}:chat-gpt-reddit-bot:v0.0.1 (by /u/pb7280)";
+            var ua = $"{RuntimeInformation.FrameworkDescription}:chat-gpt-reddit-bot:v{ThisAssembly.AssemblyInformationalVersion}";
+            if (opts.Author is not null)
+            {
+                ua += $" (by /u/{opts.Author})";
+            }
 
             return new RedditClient(opts.AppId, opts.RefreshToken, opts.AppSecret, userAgent: ua);
         });
