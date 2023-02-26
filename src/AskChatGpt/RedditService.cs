@@ -23,7 +23,7 @@ internal partial class RedditService
             AskChatGpt v{versionWithoutBuildMetadata ?? "?"} |
             [Feedback](https://www.reddit.com/message/compose/?to={_reddit.Account.Me.Name})
 
-            ^(Disclaimer: this is not full ChatGPT, as APIs are not available for that yet. It's a more rudimentary
+            ^(Disclaimer: this is not full ChatGPT, as APIs are not available for that yet. It's more rudimentary
             and won't give as detailed answers.)
             """;
     }
