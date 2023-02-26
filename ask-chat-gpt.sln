@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C5C589D-D7AE-46A2-9F20-CA4A6D7BDBF4}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		version.json = version.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{E54B0F18-BCD2-420E-B918-C489BB04CCB7}"
