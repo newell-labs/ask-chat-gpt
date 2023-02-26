@@ -61,8 +61,27 @@ internal partial class RedditService
                 var commentFullName = message.Name;
                 var comment = _reddit.Comment(commentFullName).About();
 
-                var response = await responseFactory(message.Author, messageText);
+                var author = message.Author;
+                string? promptContext = null;
+                if (string.IsNullOrEmpty(messageText))
+                {
+                    // Get prompt from parent comment
+                    if (comment.ParentId == null) throw new Exception("No prompt is after the username mention, and no parent comment exists");
+
+                    var parentComment = _reddit.Comment(comment.ParentId).About();
+                    author = parentComment.Author;
+                    promptContext = parentComment.Body;
+                    messageText = promptContext;
+                }
+
+                var response = await responseFactory(author, messageText);
+
                 var body = $"{response}\n\n{_signature}";
+
+                if (promptContext != null)
+                {
+                    body = $">{promptContext}\n{body}";
+                }
 
                 _logger.LogInformation("Sending reply to {}:\n------------\n{}\n------------", message.Context, body);
 
