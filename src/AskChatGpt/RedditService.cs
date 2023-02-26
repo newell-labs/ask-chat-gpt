@@ -1,13 +1,10 @@
-﻿using System.Collections.Concurrent;
-using Reddit;
-using Reddit.Controllers.EventArgs;
-using Reddit.Things;
+﻿using Reddit;
 
 namespace AskChatGpt;
 
 internal partial class RedditService
 {
-    private readonly ConcurrentQueue<Message> _unreadMessages = new();
+    private readonly string _signature;
 
     private readonly RedditClient _reddit;
     private readonly ILogger<RedditService> _logger;
@@ -16,6 +13,13 @@ internal partial class RedditService
     {
         _reddit = reddit;
         _logger = logger;
+
+        var versionWithoutBuildMetadata = ThisAssembly.AssemblyInformationalVersion.Split('+').FirstOrDefault();
+        _signature = $"""
+            ^(AskChatGpt v{versionWithoutBuildMetadata ?? "?"} |
+            I'm an experimental bot that leverages [OpenAI's text completion API](https://platform.openai.com/docs/guides/completion)
+            to respond to mentions or replies. See my [GitHub](https://github.com/newell-labs/chat-gpt-reddit-bot) for more info.)
+            """;
     }
 
     public async Task ProcessMessages(Func<string, string, Task<string>> responseFactory, CancellationToken cancel)
@@ -57,9 +61,10 @@ internal partial class RedditService
                 var commentFullName = message.Name;
                 var comment = _reddit.Comment(commentFullName).About();
 
-                var body = await responseFactory(message.Author, messageText);
+                var response = await responseFactory(message.Author, messageText);
+                var body = $"{response}\n\n{_signature}";
 
-                _logger.LogInformation("Sending reply to {}:\n{}", message.Context, body);
+                _logger.LogInformation("Sending reply to {}:\n------------\n{}\n------------", message.Context, body);
 
                 await comment.ReplyAsync(body);
 
@@ -85,13 +90,5 @@ internal partial class RedditService
             _logger.LogWarning("Processing cancelled");
         else
             _logger.LogInformation("Done processing");
-    }
-
-    private void OnUnreadUpdated(object? sender, MessagesUpdateEventArgs e)
-    {
-        foreach (var message in e.NewMessages)
-        {
-            _unreadMessages.Enqueue(message);
-        }
     }
 }
