@@ -5,9 +5,11 @@ VisualStudioVersion = 17.6.33417.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGptRedditBot", "ChatGptRedditBot\ChatGptRedditBot.csproj", "{CAAB7106-E9B9-4857-B14D-B6D20EB6FE71}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{A6886B4A-5609-4901-A2E2-C97409160076}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C5C589D-D7AE-46A2-9F20-CA4A6D7BDBF4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{E54B0F18-BCD2-420E-B918-C489BB04CCB7}"
 	ProjectSection(SolutionItems) = preProject
-		docker-image.yaml = docker-image.yaml
+		.github\workflows\docker-image.yaml = .github\workflows\docker-image.yaml
 	EndProjectSection
 EndProject
 Global
@@ -23,6 +25,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E54B0F18-BCD2-420E-B918-C489BB04CCB7} = {8C5C589D-D7AE-46A2-9F20-CA4A6D7BDBF4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0DBCADE8-2C87-4A9D-9F6D-B979AD94FC46}
