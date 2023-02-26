@@ -1,4 +1,5 @@
-﻿using OpenAI.GPT3.Interfaces;
+﻿using Microsoft.Extensions.Caching.Memory;
+using OpenAI.GPT3.Interfaces;
 using OpenAI.GPT3.ObjectModels;
 using OpenAI.GPT3.ObjectModels.RequestModels;
 
@@ -7,13 +8,26 @@ namespace AskChatGpt;
 internal class OpenAIService
 {
     private readonly IOpenAIService _openAI;
+    private readonly IMemoryCache _memoryCache;
 
-    public OpenAIService(IOpenAIService openAI)
+    public OpenAIService(IOpenAIService openAI, IMemoryCache memoryCache)
     {
         _openAI = openAI;
+        _memoryCache = memoryCache;
     }
 
     public async Task<string> GetChatResponse(string author, string message, string? parentAuthor)
+    {
+        var response = await _memoryCache.GetOrCreateAsync((author, message, parentAuthor), async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+            return await GetChatResponseFromSource(author, message, parentAuthor);
+        });
+
+        return response!;
+    }
+
+    private async Task<string> GetChatResponseFromSource(string author, string message, string? parentAuthor)
     {
         const string selfName = "cgptbot";
         var prompt = $"""

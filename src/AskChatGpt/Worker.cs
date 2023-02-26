@@ -17,7 +17,7 @@ internal class Worker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogDebug("Worker running at: {time}", DateTimeOffset.Now);
+            _logger.LogTrace("Worker running at: {time}", DateTimeOffset.Now);
 
             try
             {
