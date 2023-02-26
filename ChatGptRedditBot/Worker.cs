@@ -23,7 +23,14 @@ internal class Worker : BackgroundService
         {
             _logger.LogDebug("Worker running at: {time}", DateTimeOffset.Now);
 
-            await _redditService.ProcessMessages(_openAIService.GetChatResponse, stoppingToken);
+            try
+            {
+                await _redditService.ProcessMessages(_openAIService.GetChatResponse, stoppingToken);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error processing messages");
+            }
 
             await Task.Delay(10000, stoppingToken);
         }
