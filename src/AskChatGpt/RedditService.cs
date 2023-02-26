@@ -1,12 +1,11 @@
 ﻿using System.Collections.Concurrent;
-using System.Text.RegularExpressions;
 using Reddit;
 using Reddit.Controllers.EventArgs;
 using Reddit.Things;
 
 namespace ChatGptRedditBot;
 
-internal partial class RedditService : IDisposable
+internal partial class RedditService
 {
     private readonly ConcurrentQueue<Message> _unreadMessages = new();
 
@@ -19,30 +18,25 @@ internal partial class RedditService : IDisposable
         _logger = logger;
     }
 
-    public void StartMonitoringInbox()
-    {
-        _reddit.Account.Messages.MonitorUnread();
-        _reddit.Account.Messages.UnreadUpdated += OnUnreadUpdated;
-    }
-
-    public void Dispose()
-    {
-        _reddit.Account.Messages.UnreadUpdated -= OnUnreadUpdated;
-    }
-
     public async Task ProcessMessages(Func<string, string, Task<string>> responseFactory, CancellationToken cancel)
     {
-        var currentCount = _unreadMessages.Count;
-        if (currentCount == 0)
+        // We're using the message inbox as a processing queue here, so don't mark them as read just yet.
+        // A message is only marked read after it's successfully processed, so failures will retry in the next round.
+        // TODO: Add some sort of backoff for retrying persistent failed responses.
+        var unreadMessages = _reddit.Account.Messages.GetMessagesUnread(mark: false);
+
+        if (unreadMessages.Count == 0)
         {
             _logger.LogInformation("No new messages");
             return;
         }
 
-        _logger.LogInformation("Processing {} messages", currentCount);
+        _logger.LogInformation("Processing {} messages", unreadMessages.Count);
 
-        while (_unreadMessages.TryDequeue(out var message) && !cancel.IsCancellationRequested)
+        foreach (var message in unreadMessages)
         {
+            if (cancel.IsCancellationRequested) break;
+
             _logger.LogDebug("Processing message {}", message.Fullname);
             _logger.LogTrace("Message from {}:\n{}", message.Author, message.Body);
 
@@ -60,24 +54,7 @@ internal partial class RedditService : IDisposable
             {
                 _logger.LogDebug("Sending reply for message from subreddit {}", message.Subreddit);
 
-                Match match = CommentPermalinkRegex().Match(message.Context);
-
-                string postFullname = "t3_" + (match != null && match.Groups != null && match.Groups.Count >= 2
-                    ? match.Groups[1].Value
-                    : "");
-                if (postFullname.Equals("t3_"))
-                {
-                    throw new Exception("Unable to extract ID from permalink.");
-                }
-
-                var commentFullName = "t1_" + (match != null && match.Groups != null && match.Groups.Count >= 4
-                    ? match.Groups[3].Value
-                    : "");
-                if (commentFullName.Equals("t1_"))
-                {
-                    throw new Exception("Unable to extract ID from permalink.");
-                }
-
+                var commentFullName = message.Name;
                 var comment = _reddit.Comment(commentFullName).About();
 
                 var body = await responseFactory(message.Author, messageText);
@@ -90,7 +67,7 @@ internal partial class RedditService : IDisposable
             }
             else
             {
-                _logger.LogWarning("Ignoring private message for now");
+                _logger.LogWarning("Ignoring private message for now until probation lifted");
                 continue;
 
                 //_logger.LogDebug("Sending reply for private message");
@@ -104,7 +81,10 @@ internal partial class RedditService : IDisposable
             }
         }
 
-        _logger.LogInformation(cancel.IsCancellationRequested ? "Processing cancelled" : "Done processing");
+        if (cancel.IsCancellationRequested)
+            _logger.LogWarning("Processing cancelled");
+        else
+            _logger.LogInformation("Done processing");
     }
 
     private void OnUnreadUpdated(object? sender, MessagesUpdateEventArgs e)
@@ -114,7 +94,4 @@ internal partial class RedditService : IDisposable
             _unreadMessages.Enqueue(message);
         }
     }
-
-    [GeneratedRegex("\\/comments\\/([a-z0-9]+)\\/([-_A-Za-z0-9]+)\\/([a-z0-9]+)\\/")]
-    private static partial Regex CommentPermalinkRegex();
 }
