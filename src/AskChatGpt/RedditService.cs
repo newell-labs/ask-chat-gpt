@@ -68,7 +68,7 @@ internal partial class RedditService
                     // Get prompt from parent comment
                     if (comment.ParentId == null) throw new Exception("No prompt is after the username mention, and no parent comment exists");
 
-                    var parentComment = _reddit.Comment(comment.ParentId).About();
+                    var parentComment = _reddit.Comment($"t1_{comment.ParentId}").About();
                     author = parentComment.Author;
                     promptContext = parentComment.Body;
                     messageText = promptContext;
@@ -80,7 +80,7 @@ internal partial class RedditService
 
                 if (promptContext != null)
                 {
-                    body = $">{promptContext}\n{body}";
+                    body = $">{promptContext}\n\n{body}";
                 }
 
                 _logger.LogInformation("Sending reply to {}:\n------------\n{}\n------------", message.Context, body);

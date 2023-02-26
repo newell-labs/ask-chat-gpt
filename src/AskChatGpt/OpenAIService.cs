@@ -15,11 +15,13 @@ internal class OpenAIService
 
     public async Task<string> GetChatResponse(string author, string message)
     {
+        const string selfName = "cgptbot";
         var prompt = $"""
+            You are a reddit bot named {selfName}.
             Reply to this reddit comment, giving an insightful answer or witty remark in response.
 
-            {author}: {message}
-              Reply:
+            /u/{author}'s comment: {message}
+              /u/{selfName}'s reply:
             """;
 
         var completionResult = await _openAI.Completions.CreateCompletion(new CompletionCreateRequest()
