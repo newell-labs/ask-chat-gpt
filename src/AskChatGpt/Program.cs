@@ -1,5 +1,5 @@
 using System.Runtime.InteropServices;
-using ChatGptRedditBot;
+using AskChatGpt;
 using Microsoft.Extensions.Options;
 using OpenAI.GPT3.Extensions;
 using Reddit;

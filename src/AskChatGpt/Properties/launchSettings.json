@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "ChatGptRedditBot": {
+    "AskChatGpt": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"

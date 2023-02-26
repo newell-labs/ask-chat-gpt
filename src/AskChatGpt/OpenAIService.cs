@@ -2,7 +2,7 @@
 using OpenAI.GPT3.ObjectModels;
 using OpenAI.GPT3.ObjectModels.RequestModels;
 
-namespace ChatGptRedditBot;
+namespace AskChatGpt;
 
 internal class OpenAIService
 {

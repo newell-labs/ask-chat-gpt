@@ -1,4 +1,4 @@
-namespace ChatGptRedditBot;
+namespace AskChatGpt;
 
 internal class Worker : BackgroundService
 {
@@ -15,10 +15,6 @@ internal class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _redditService.StartMonitoringInbox();
-
-        await Task.Delay(1000, stoppingToken);
-
         while (!stoppingToken.IsCancellationRequested)
         {
             _logger.LogDebug("Worker running at: {time}", DateTimeOffset.Now);

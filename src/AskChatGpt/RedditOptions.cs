@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ChatGptRedditBot;
+namespace AskChatGpt;
 
 internal class RedditOptions
 {
