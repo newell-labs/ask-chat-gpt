@@ -24,6 +24,8 @@ IHost host = Host.CreateDefaultBuilder(args)
             o.SingleLine = true;
         });
 
+        services.AddMemoryCache();
+
         services.AddOptions<RedditOptions>().BindConfiguration("Reddit").ValidateDataAnnotations();
         services.AddSingleton<RedditClient>(sp =>
         {
