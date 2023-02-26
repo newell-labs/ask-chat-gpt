@@ -1,8 +1,11 @@
 using System.Runtime.InteropServices;
 using AskChatGpt;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using OpenAI.GPT3.Extensions;
 using Reddit;
+
+Console.WriteLine($"Starting up {ThisAssembly.AssemblyTitle} v{ThisAssembly.AssemblyInformationalVersion}");
 
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((context, builder) =>
@@ -12,6 +15,11 @@ IHost host = Host.CreateDefaultBuilder(args)
     })
     .ConfigureServices(services =>
     {
+        services.Configure<ConsoleLoggerOptions>(o =>
+        {
+            o.FormatterName = ConsoleFormatterNames.Json;
+        });
+
         services.AddOptions<RedditOptions>().BindConfiguration("Reddit").ValidateDataAnnotations();
         services.AddSingleton<RedditClient>(sp =>
         {
