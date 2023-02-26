@@ -58,6 +58,7 @@ jobs:
       if: github.event_name != 'pull_request'
       with:
         tag: v${{ steps.nbgv.outputs.SemVer2 }}
+        commit: ${{ github.ref_name }}
         prerelease: ${{ steps.nbgv.outputs.PrereleaseVersion != '' }}
         draft: true
         generateReleaseNotes: true
