@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using Reddit;
 using Reddit.Controllers.EventArgs;
 using Reddit.Things;
-using static OpenAI.GPT3.ObjectModels.Models;
 
 namespace ChatGptRedditBot;
 
@@ -47,8 +46,9 @@ internal partial class RedditService : IDisposable
             _logger.LogDebug("Processing message {}", message.Fullname);
             _logger.LogTrace("Message from {}:\n{}", message.Author, message.Body);
 
-            const string username = "u/ask-chat-gpt";
+            var username = _reddit.Account.Me.Name;
             var messageText = message.Body;
+
             var usernameIndex = messageText.IndexOf(username);
             if (usernameIndex >= 0)
             {
