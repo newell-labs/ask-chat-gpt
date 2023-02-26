@@ -21,10 +21,9 @@ internal partial class RedditService
         _signature = $"""
             -----
             AskChatGpt v{versionWithoutBuildMetadata ?? "?"} |
-            [Feedback](https://www.reddit.com/message/compose/?to={_reddit.Account.Me.Name})
+            [Details & Feedback](https://www.reddit.com/r/AskChatGPTBot/)
 
-            ^(Disclaimer: this is not full ChatGPT, as APIs are not available for that yet. It's more rudimentary
-            and won't give as detailed answers.)
+            ^(Disclaimer: this uses OpenAI's GPT-3 text completion API; full ChatGPT features are pending API support.)
             """;
     }
 
