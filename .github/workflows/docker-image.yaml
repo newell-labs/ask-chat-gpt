@@ -14,12 +14,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+  
+    - name: Nerdbank.GitVersioning
+      id: nbgv
+      uses: dotnet/nbgv@v0.4
 
     - name: Docker Metadata action
       id: meta
       uses: docker/metadata-action@v4
       with:
         images: ghcr.io/newell-labs/chat-gpt-reddit-bot
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}},value=${{ steps.nbgv.outputs.SemVer2 }}
+          type=semver,pattern={{major}}.{{minor}},value=${{ steps.nbgv.outputs.SemVer2 }}
 
     - name: Docker Login
       uses: docker/login-action@v2
@@ -37,3 +48,11 @@ jobs:
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Make GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: v${{ steps.nbgv.outputs.SemVer2 }}
+        prerelease: ${{ steps.nbgv.outputs.PrereleaseVersion != '' }}
+        draft: true
+        generateReleaseNotes: true
