@@ -13,13 +13,19 @@ internal class OpenAIService
         _openAI = openAI;
     }
 
-    public async Task<string> GetChatResponse(string author, string message)
+    public async Task<string> GetChatResponse(string author, string message, string? parentAuthor)
     {
+        const string selfName = "cgptbot";
         var prompt = $"""
-            Reply to this reddit comment, giving an insightful answer or witty remark in response.
+            Acting as a reddit bot named {selfName}, reply to this comment,
+            giving an insightful answer or witty remark in response.
 
-            {author}: {message}
-              Reply:
+            {(parentAuthor == null ? "" : $"/u/{author} has asked you to comment on /u/{parentAuthor}'s comment above them.")}
+
+            /u/{parentAuthor ?? author}'s comment: {message}
+
+
+              /u/{selfName}'s reply:
             """;
 
         var completionResult = await _openAI.Completions.CreateCompletion(new CompletionCreateRequest()

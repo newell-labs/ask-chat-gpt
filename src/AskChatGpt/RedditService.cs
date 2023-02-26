@@ -22,7 +22,7 @@ internal partial class RedditService
             """;
     }
 
-    public async Task ProcessMessages(Func<string, string, Task<string>> responseFactory, CancellationToken cancel)
+    public async Task ProcessMessages(Func<string, string, string?, Task<string>> responseFactory, CancellationToken cancel)
     {
         // We're using the message inbox as a processing queue here, so don't mark them as read just yet.
         // A message is only marked read after it's successfully processed, so failures will retry in the next round.
@@ -61,7 +61,19 @@ internal partial class RedditService
                 var commentFullName = message.Name;
                 var comment = _reddit.Comment(commentFullName).About();
 
-                var response = await responseFactory(message.Author, messageText);
+                var parentAuthor = message.Author;
+                if (string.IsNullOrEmpty(messageText))
+                {
+                    // Get prompt from parent comment
+                    if (comment.ParentId == null) throw new Exception("No prompt is after the username mention, and no parent comment exists");
+
+                    var parentComment = _reddit.Comment($"t1_{comment.ParentId}").About();
+                    parentAuthor = parentComment.Author;
+                    messageText = parentComment.Body;
+                }
+
+                var response = await responseFactory(message.Author, messageText, parentAuthor);
+
                 var body = $"{response}\n\n{_signature}";
 
                 _logger.LogInformation("Sending reply to {}:\n------------\n{}\n------------", message.Context, body);
