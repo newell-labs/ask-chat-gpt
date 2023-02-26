@@ -12,4 +12,6 @@ internal class RedditOptions
 
     [Required]
     public string RefreshToken { get; set;} = default!;
+
+    public string? Author { get; set; }
 }
