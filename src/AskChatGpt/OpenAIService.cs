@@ -21,9 +21,16 @@ internal class OpenAIService
         var response = await _memoryCache.GetOrCreateAsync((author, message, parentAuthor), async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+            return await GetChatResponseFromSource(author, message, parentAuthor);
+        });
 
-            const string selfName = "cgptbot";
-            var prompt = $"""
+        return response!;
+    }
+
+    private async Task<string> GetChatResponseFromSource(string author, string message, string? parentAuthor)
+    {
+        const string selfName = "cgptbot";
+        var prompt = $"""
             Acting as a reddit bot named {selfName}, reply to this comment,
             giving an insightful answer or witty remark in response.
 
@@ -35,21 +42,18 @@ internal class OpenAIService
               /u/{selfName}'s reply:
             """;
 
-            var completionResult = await _openAI.Completions.CreateCompletion(new CompletionCreateRequest()
-            {
-                Prompt = prompt,
-                Model = Models.TextCurieV1,
-                MaxTokens = 500
-            });
-
-            if (!completionResult.Successful || completionResult.Choices.Count <= 0)
-            {
-                throw new Exception($"Couldn't get completion: [{completionResult.Error?.Code}] {completionResult.Error?.Message}");
-            }
-
-            return completionResult.Choices.First().Text;
+        var completionResult = await _openAI.Completions.CreateCompletion(new CompletionCreateRequest()
+        {
+            Prompt = prompt,
+            Model = Models.TextCurieV1,
+            MaxTokens = 500
         });
 
-        return response!;
+        if (!completionResult.Successful || completionResult.Choices.Count <= 0)
+        {
+            throw new Exception($"Couldn't get completion: [{completionResult.Error?.Code}] {completionResult.Error?.Message}");
+        }
+
+        return completionResult.Choices.First().Text;
     }
 }
