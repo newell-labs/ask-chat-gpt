@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33417.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatGptRedditBot", "ChatGptRedditBot\ChatGptRedditBot.csproj", "{CAAB7106-E9B9-4857-B14D-B6D20EB6FE71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatGptRedditBot", "ChatGptRedditBot\ChatGptRedditBot.csproj", "{CAAB7106-E9B9-4857-B14D-B6D20EB6FE71}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{A6886B4A-5609-4901-A2E2-C97409160076}"
+	ProjectSection(SolutionItems) = preProject
+		docker-image.yaml = docker-image.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
