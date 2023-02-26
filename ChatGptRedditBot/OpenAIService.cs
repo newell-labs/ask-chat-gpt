@@ -15,13 +15,11 @@ internal class OpenAIService
 
     public async Task<string> GetChatResponse(string author, string message)
     {
-        message = message.Replace("u/ask-chat-gpt", "");
-
         var prompt = $"""
-            Add a witty or insightful comment to this reddit thread.
+            Reply to this reddit comment, giving an insightful answer or witty remark in response.
 
             {author}: {message}
-              Comment:
+              Reply:
             """;
 
         var completionResult = await _openAI.Completions.CreateCompletion(new CompletionCreateRequest()

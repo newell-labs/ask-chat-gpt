@@ -47,6 +47,15 @@ internal partial class RedditService : IDisposable
             _logger.LogDebug("Processing message {}", message.Fullname);
             _logger.LogTrace("Message from {}:\n{}", message.Author, message.Body);
 
+            const string username = "u/ask-chat-gpt";
+            var messageText = message.Body;
+            var usernameIndex = messageText.IndexOf(username);
+            if (usernameIndex >= 0)
+            {
+                var messageStart = usernameIndex + username.Length;
+                messageText = messageText[messageStart..];
+            }
+
             if (message.Subreddit != null)
             {
                 _logger.LogDebug("Sending reply for message from subreddit {}", message.Subreddit);
@@ -71,7 +80,7 @@ internal partial class RedditService : IDisposable
 
                 var comment = _reddit.Comment(commentFullName).About();
 
-                var body = await responseFactory(message.Author, message.Body);
+                var body = await responseFactory(message.Author, messageText);
 
                 _logger.LogInformation("Sending reply to {}:\n{}", message.Context, body);
 
@@ -88,7 +97,7 @@ internal partial class RedditService : IDisposable
                 //var recipient = message.Author;
                 //var subject = $"Re: {message.Subject}";
 
-                //var body = await responseFactory(message.Author, message.Body);
+                //var body = await responseFactory(message.Author, messageText);
 
                 //_logger.LogTrace("Sending reply to {}:\n{}\n{}", recipient, subject, body);
                 //await _reddit.Account.Messages.ComposeAsync(recipient, subject, body);
