@@ -1,4 +1,4 @@
-namespace ChatGptRedditBot;
+namespace AskChatGpt;
 
 internal class Worker : BackgroundService
 {

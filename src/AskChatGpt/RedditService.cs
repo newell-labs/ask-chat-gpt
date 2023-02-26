@@ -3,7 +3,7 @@ using Reddit;
 using Reddit.Controllers.EventArgs;
 using Reddit.Things;
 
-namespace ChatGptRedditBot;
+namespace AskChatGpt;
 
 internal partial class RedditService
 {
