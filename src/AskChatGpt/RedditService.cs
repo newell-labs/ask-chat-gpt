@@ -21,7 +21,7 @@ internal partial class RedditService
         _signature = $"""
             -----
             AskChatGpt v{versionWithoutBuildMetadata ?? "?"} |
-            [Details & Feedback](https://www.reddit.com/r/AskChatGPTBot/)
+            Details & Feedback - see AskChatGPTBot subreddit
 
             ^(Disclaimer: this uses OpenAI's GPT-3 text completion API; full ChatGPT features are pending API support.)
             """;
