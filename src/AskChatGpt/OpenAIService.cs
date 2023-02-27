@@ -30,7 +30,7 @@ internal class OpenAIService
     private async Task<string> GetChatResponseFromSource(string botName, string author, string message, string? parentAuthor)
     {
         var prompt = $"""
-            You are a reddit bot named {botName} that has been mentioned or replied to on a thread.
+            You are a reddit bot named Ask ChatGPT, with username /u/{botName}, and you have been mentioned or replied to on a thread.
             Write a reply comment, attempting to answer any questions or requests from the other redditors.
 
             Example Thread:
