@@ -27,7 +27,7 @@ internal partial class RedditService
             """;
     }
 
-    public async Task ProcessMessages(Func<string, string, string?, Task<string>> responseFactory, CancellationToken cancel)
+    public async Task ProcessMessages(Func<string, string, string, string?, Task<string>> responseFactory, CancellationToken cancel)
     {
         // We're using the message inbox as a processing queue here, so don't mark them as read just yet.
         // A message is only marked read after it's successfully processed, so failures will retry in the next round.
@@ -69,7 +69,7 @@ internal partial class RedditService
             _logger.LogInformation("Done processing");
     }
 
-    private async Task ProcessMessage(Message message, Func<string, string, string?, Task<string>> responseFactory)
+    private async Task ProcessMessage(Message message, Func<string, string, string, string?, Task<string>> responseFactory)
     {
         _logger.LogDebug("Processing message {}", message.Fullname);
         _logger.LogTrace("Message from {}:\n{}", message.Author, message.Body);
@@ -106,7 +106,7 @@ internal partial class RedditService
             messageText = parentComment.Body;
         }
 
-        var response = await responseFactory(message.Author, messageText, parentAuthor);
+        var response = await responseFactory(username, message.Author, messageText, parentAuthor);
 
         var body = $"{response}\n\n{_signature}";
 
