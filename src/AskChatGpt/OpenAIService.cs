@@ -51,7 +51,7 @@ internal class OpenAIService
         {
             Prompt = prompt,
             Model = Models.TextCurieV1,
-            MaxTokens = 500
+            MaxTokens = 1000
         });
 
         if (!completionResult.Successful || completionResult.Choices.Count <= 0)
