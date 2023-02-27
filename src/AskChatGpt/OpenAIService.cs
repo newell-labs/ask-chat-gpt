@@ -16,30 +16,35 @@ internal class OpenAIService
         _memoryCache = memoryCache;
     }
 
-    public async Task<string> GetChatResponse(string author, string message, string? parentAuthor)
+    public async Task<string> GetChatResponse(string botName, string author, string message, string? parentAuthor)
     {
         var response = await _memoryCache.GetOrCreateAsync((author, message, parentAuthor), async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
-            return await GetChatResponseFromSource(author, message, parentAuthor);
+            return await GetChatResponseFromSource(botName, author, message, parentAuthor);
         });
 
         return response!;
     }
 
-    private async Task<string> GetChatResponseFromSource(string author, string message, string? parentAuthor)
+    private async Task<string> GetChatResponseFromSource(string botName, string author, string message, string? parentAuthor)
     {
-        const string selfName = "cgptbot";
         var prompt = $"""
-            Acting as a reddit bot named {selfName}, reply to this comment,
-            giving an insightful answer or witty remark in response.
+            You are a reddit bot named {botName} that has been mentioned or replied to on a thread.
+            Write a reply comment, attempting to answer any questions or requests from the other redditors.
 
-            {(parentAuthor == null ? "" : $"/u/{author} has asked you to comment on /u/{parentAuthor}'s comment above them.")}
+            Example Thread:
 
-            /u/{parentAuthor ?? author}'s comment: {message}
+            /u/redditor: How can I write hello world in python?
+            /u/{botName}: Writing hello world in python is as simple as `print('Hello, World!')`!
 
+            Thread:
 
-              /u/{selfName}'s reply:
+            /u/{parentAuthor ?? author}: {message}
+
+            {(parentAuthor == null ? "" : $"/u/{author}")}
+
+            /u/{botName}:
             """;
 
         var completionResult = await _openAI.Completions.CreateCompletion(new CompletionCreateRequest()
