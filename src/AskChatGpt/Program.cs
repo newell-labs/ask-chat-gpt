@@ -26,6 +26,8 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         services.AddMemoryCache();
 
+        services.AddOptions<AskChatGptOptions>().BindConfiguration("AskChatGpt");
+
         services.AddOptions<RedditOptions>().BindConfiguration("Reddit").ValidateDataAnnotations();
         services.AddSingleton<RedditClient>(sp =>
         {
@@ -48,4 +50,36 @@ IHost host = Host.CreateDefaultBuilder(args)
     })
     .Build();
 
-host.Run();
+var opts = host.Services.GetRequiredService<IOptions<AskChatGptOptions>>().Value;
+
+if (opts.PromptMode)
+{
+    await RunPromptMode();
+}
+else
+{
+    await host.RunAsync();
+}
+
+async Task RunPromptMode()
+{
+    var openAIService = host.Services.GetRequiredService<OpenAIService>();
+
+    var botName = ThisAssembly.AssemblyTitle;
+    var author = Environment.UserName;
+
+    while (true)
+    {
+        Console.WriteLine("Write the reddit comment and press enter");
+
+        var comment = Console.ReadLine();
+        if (comment == null) continue;
+
+        var reply = await openAIService.GetChatResponse(botName, author, comment, null);
+
+        Console.WriteLine();
+        Console.WriteLine("Reply:");
+        Console.WriteLine(reply);
+        Console.WriteLine();
+    }
+}
