@@ -23,7 +23,8 @@ internal partial class RedditService
             AskChatGpt v{versionWithoutBuildMetadata ?? "?"} |
             Details & Feedback - see AskChatGPTBot subreddit
 
-            ^(Disclaimer: this uses OpenAI's GPT-3 text completion API; full ChatGPT features are pending API support.)
+            ^(Disclaimer: this uses OpenAI's GPT-3 text completion API; full ChatGPT features are pending API support.
+            Also, the bot straight up lies.)
             """;
     }
 
