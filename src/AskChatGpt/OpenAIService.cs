@@ -30,19 +30,29 @@ internal class OpenAIService
     private async Task<string> GetChatResponseFromSource(string botName, string author, string message, string? parentAuthor)
     {
         var prompt = $"""
-            You are a reddit bot named Ask ChatGPT, with username /u/{botName}, and you have been mentioned or replied to on a thread.
-            Write a reply comment, attempting to answer any questions or requests from the other redditors.
+            As a reddit bot named Ask ChatGPT, with username /u/{botName}, you have been mentioned or replied to
+            on a thread.
+            Write a reply comment responding to /u/{author}.
 
             Example Thread:
 
             /u/redditor: How can I write hello world in python?
-            /u/{botName}: Writing hello world in python is as simple as `print('Hello, World!')`!
 
-            Thread:
+            /u/{botName}: Writing hello world in a python program can be done with `print('Hello, World!')`
+
+            Example Thread:
+
+            /u/redditor-dan: How many days are in 234 years anyway?
+
+            /u/redditor-steve: /u/{botName}
+
+            /u/{botName}: /u/redditor-dan There are 85,410 days in 234 years.
+
+            Current Thread:
 
             /u/{parentAuthor ?? author}: {message}
 
-            {(parentAuthor == null ? "" : $"/u/{author}")}
+            {(parentAuthor == null ? "" : $"/u/{author}: /u/{botName}")}
 
             /u/{botName}:
             """;
