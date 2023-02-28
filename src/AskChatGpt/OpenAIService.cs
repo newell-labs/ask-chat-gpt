@@ -40,14 +40,6 @@ internal class OpenAIService
 
             /u/{botName}: Writing hello world in a python program can be done with `print('Hello, World!')`
 
-            Example Thread:
-
-            /u/redditor-dan: How many days are in 234 years anyway?
-
-            /u/redditor-steve: /u/{botName}
-
-            /u/{botName}: /u/redditor-dan There are 85,410 days in 234 years.
-
             Current Thread:
 
             /u/{parentAuthor ?? author}: {message}
