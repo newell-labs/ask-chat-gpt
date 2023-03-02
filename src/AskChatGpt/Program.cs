@@ -70,6 +70,7 @@ async Task RunPromptMode()
 
     var botName = ThisAssembly.AssemblyTitle;
     var author = Environment.UserName;
+    var thread = new ChatThread("", "local", "Debug test prompt");
 
     ChatNode? history = null;
 
@@ -80,7 +81,7 @@ async Task RunPromptMode()
         var comment = Console.ReadLine();
         if (comment == null) continue;
 
-        var node = new ChatNode("", history, author, comment);
+        var node = new ChatNode("", thread, history, author, comment);
 
         var reply = await chatService.GetResponseForChat(botName, node);
 
@@ -89,6 +90,6 @@ async Task RunPromptMode()
         Console.WriteLine(reply);
         Console.WriteLine();
 
-        history = new ChatNode("", node, botName, reply);
+        history = new ChatNode("", thread, node, botName, reply);
     }
 }

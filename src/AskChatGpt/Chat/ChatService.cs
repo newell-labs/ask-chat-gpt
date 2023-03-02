@@ -18,9 +18,14 @@ internal class ChatService
 
     public async Task<string> GetResponseForChat(string botUser, ChatNode chat)
     {
+        var systemPrompt = $"""
+            You are a reddit bot digital assistant named /u/{botUser} and have been mentioned on a thread
+            titled "{chat.Thread.Title}". Answer with a concise reply.
+            """;
+
         var messages = new List<ChatMessage>
         {
-            ChatMessage.FromSystem($"You are a reddit bot digital assistant named /u/{botUser} and have been mentioned on a thread. Answer with a concise reply.")
+            ChatMessage.FromSystem(systemPrompt)
         };
 
         foreach (var chatNode in chat.EnumerateFromFirstInvolvementOfUser(botUser))

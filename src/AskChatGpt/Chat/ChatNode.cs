@@ -2,6 +2,7 @@
 
 public record ChatNode(
     string ID,
+    ChatThread Thread,
     ChatNode? Parent,
     string Author,
     string Body)
