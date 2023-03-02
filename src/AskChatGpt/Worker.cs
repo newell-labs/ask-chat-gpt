@@ -2,15 +2,13 @@ namespace AskChatGpt;
 
 internal class Worker : BackgroundService
 {
-    private readonly OpenAIService _openAIService;
-    private readonly RedditService _redditService;
+    private readonly BotService _botService;
     private readonly ILogger<Worker> _logger;
 
-    public Worker(ILogger<Worker> logger, RedditService redditService, OpenAIService openAIService)
+    public Worker(ILogger<Worker> logger, BotService botService)
     {
         _logger = logger;
-        _redditService = redditService;
-        _openAIService = openAIService;
+        _botService = botService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -21,7 +19,7 @@ internal class Worker : BackgroundService
 
             try
             {
-                await _redditService.ProcessMessages(_openAIService.GetChatResponse, stoppingToken);
+                await _botService.ProcessMessageInbox(stoppingToken);
             }
             catch (Exception e)
             {

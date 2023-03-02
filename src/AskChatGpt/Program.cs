@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using AskChatGpt;
+using AskChatGpt.Chat;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using OpenAI.GPT3.Extensions;
@@ -42,8 +43,9 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<RedditService>();
 
         services.AddOpenAIService();
-        services.AddSingleton<OpenAIService>();
+        services.AddSingleton<ChatService>();
 
+        services.AddSingleton<BotService>();
         services.AddHostedService<Worker>();
     })
     .Build();
