@@ -49,7 +49,7 @@ internal partial class RedditService
         await parentComment.ReplyAsync(chat.Body);
     }
 
-    private ChatNode? BuildChatChainForCommentName(string? commentFullName)
+    private ChatNode? BuildChatChainForCommentName(string? commentFullName, ChatThread? thread = null)
     {
         Reddit.Controllers.Comment comment;
         try
@@ -62,7 +62,13 @@ internal partial class RedditService
             return null;
         }
 
-        var parent = BuildChatChainForCommentName(comment.ParentFullname);
-        return new ChatNode(comment.Fullname, parent, comment.Author, comment.Body);
+        if (thread == null)
+        {
+            var post = comment.Root;
+            thread = new ChatThread(post.Fullname, post.Author, post.Title);
+        }
+
+        var parent = BuildChatChainForCommentName(comment.ParentFullname, thread);
+        return new ChatNode(comment.Fullname, thread, parent, comment.Author, comment.Body);
     }
 }
