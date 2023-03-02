@@ -1,8 +1,10 @@
 using System.Runtime.InteropServices;
 using AskChatGpt;
+using AskChatGpt.Chat;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 using OpenAI.GPT3.Extensions;
+using OpenAI.GPT3.Managers;
 using Reddit;
 
 Console.WriteLine($"Starting up {ThisAssembly.AssemblyTitle} v{ThisAssembly.AssemblyInformationalVersion}");
@@ -26,6 +28,8 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         services.AddMemoryCache();
 
+        services.AddOptions<AskChatGptOptions>().BindConfiguration("AskChatGpt");
+
         services.AddOptions<RedditOptions>().BindConfiguration("Reddit").ValidateDataAnnotations();
         services.AddSingleton<RedditClient>(sp =>
         {
@@ -42,10 +46,49 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<RedditService>();
 
         services.AddOpenAIService();
-        services.AddSingleton<OpenAIService>();
+        services.AddSingleton<ChatService>();
 
+        services.AddSingleton<BotService>();
         services.AddHostedService<Worker>();
     })
     .Build();
 
-host.Run();
+var opts = host.Services.GetRequiredService<IOptions<AskChatGptOptions>>().Value;
+
+if (opts.PromptMode)
+{
+    await RunPromptMode();
+}
+else
+{
+    await host.RunAsync();
+}
+
+async Task RunPromptMode()
+{
+    var chatService = host.Services.GetRequiredService<ChatService>();
+
+    var botName = ThisAssembly.AssemblyTitle;
+    var author = Environment.UserName;
+
+    ChatNode? history = null;
+
+    while (true)
+    {
+        Console.WriteLine("Write the reddit comment and press enter");
+
+        var comment = Console.ReadLine();
+        if (comment == null) continue;
+
+        var node = new ChatNode("", history, author, comment);
+
+        var reply = await chatService.GetResponseForChat(botName, node);
+
+        Console.WriteLine();
+        Console.WriteLine("Reply:");
+        Console.WriteLine(reply);
+        Console.WriteLine();
+
+        history = new ChatNode("", node, botName, reply);
+    }
+}

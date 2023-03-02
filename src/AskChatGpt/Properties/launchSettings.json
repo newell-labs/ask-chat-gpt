@@ -1,14 +1,22 @@
 {
-  "profiles": {
-    "AskChatGpt": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": true
-    },
-    "Docker": {
-      "commandName": "Docker"
+    "profiles": {
+        "AskChatGpt": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "DOTNET_ENVIRONMENT": "Development"
+            },
+            "dotnetRunMessages": true
+        },
+        "Prompt": {
+            "commandName": "Project",
+            "environmentVariables": {
+                "DOTNET_ENVIRONMENT": "Development",
+                "AskChatGpt__PromptMode": "True"
+            },
+            "dotnetRunMessages": true
+        },
+        "Docker": {
+            "commandName": "Docker"
+        }
     }
-  }
 }
