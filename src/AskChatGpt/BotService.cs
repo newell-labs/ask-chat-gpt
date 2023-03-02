@@ -82,10 +82,10 @@ internal class BotService
             return;
         }
 
-        var response = await _chat.GetResponseForChat(chat);
+        var response = await _chat.GetResponseForChat(username, chat);
         var fullReply = $"{response}\n\n{_signature}";
 
-        var reply = new ChatMessage("", chat, username, fullReply);
+        var reply = new ChatNode("", chat, username, fullReply);
         await _reddit.PostReplyForChat(reply);
 
         await _reddit.MarkMessageRead(message);

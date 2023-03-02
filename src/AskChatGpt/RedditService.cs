@@ -27,7 +27,7 @@ internal partial class RedditService
         return _reddit.Account.Messages.ReadMessageAsync(message.Name);
     }
 
-    public ChatMessage? GetChatForMessage(Message message)
+    public ChatNode? GetChatForMessage(Message message)
     {
         if (message.Subreddit == null)
         {
@@ -39,7 +39,7 @@ internal partial class RedditService
         return BuildChatChainForCommentName(commentFullName);
     }
 
-    public async Task PostReplyForChat(ChatMessage chat)
+    public async Task PostReplyForChat(ChatNode chat)
     {
         var parent = chat.Parent ?? throw new ArgumentException("Parent must not be null", nameof(chat));
         var parentComment = _reddit.Comment(parent.ID).About();
@@ -49,7 +49,7 @@ internal partial class RedditService
         await parentComment.ReplyAsync(chat.Body);
     }
 
-    private ChatMessage? BuildChatChainForCommentName(string? commentFullName)
+    private ChatNode? BuildChatChainForCommentName(string? commentFullName)
     {
         Reddit.Controllers.Comment comment;
         try
@@ -63,6 +63,6 @@ internal partial class RedditService
         }
 
         var parent = BuildChatChainForCommentName(comment.ParentFullname);
-        return new ChatMessage(comment.Fullname, parent, comment.Author, comment.Body);
+        return new ChatNode(comment.Fullname, parent, comment.Author, comment.Body);
     }
 }
